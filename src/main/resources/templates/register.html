@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <!--  引入jquery  -->
+    <script th:src="@{/webjars/jquery/3.6.1/dist/jquery.js}" src=""></script>
+    <!--  引入bootstrap  -->
+    <script th:src="@{/webjars/bootstrap/3.3.0/dist/js/bootstrap.js}" src=""></script>
+    <!-- 引入bootstrap css文件 -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.0/dist/css/bootstrap.css}" href="">
+</head>
+<body>
+    <form method="post" action="/user/register">
+        <div>用户名：<input type="text" name="username"/></div>
+        <div>密码：<input type="password" name="pwd"/></div>
+        <div><input type="submit" value="注册"/></div>
+    </form>
+</body>
+</html>

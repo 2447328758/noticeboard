@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员登录</title>
+    <!--  引入jquery  -->
+    <script th:src="@{/webjars/jquery/3.6.1/dist/jquery.js}" src=""></script>
+    <!--  引入bootstrap  -->
+    <script th:src="@{/webjars/bootstrap/3.3.0/dist/js/bootstrap.js}" src=""></script>
+    <!-- 引入bootstrap css文件 -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.0/dist/css/bootstrap.css}" href="">
+</head>
+<body>
+<script>
+        var xmlhttp=new XMLHttpRequest();
+        function login(){
+            let username = document.getElementById("username").value;
+            let pwd = document.getElementById("pwd").value;
+            console.log("username="+username+"&pwd="+pwd);
+            xmlhttp.open("POST","/admin/login?"+"username="+username+"&pwd="+pwd,false);
+            document.getElementById("msg").innerHTML="error";
+            xmlhttp.send();
+            let result = JSON.parse(xmlhttp.responseText);
+            if(result.code=='OK')
+                window.location.href="/admin/main";
+                //console.log(xmlhttp.cookie);
+            //document.getElementById("msg").innerHTML=xmlhttp.getAllResponseHeaders();
+            else
+                window.alert("登陆失败，密码或账号错误");
+        }
+    </script>
+<p id="msg" style="color:red"></p>
+<h1>管理员登录</h1>
+<form method="post" action="/admin/login">
+    <div>用户名：<input id="username" type="text" name="username"/></div>
+    <div>密码：<input id="pwd" type="password" name="pwd"/></div>
+    <div>
+        <input type="button" onclick="login()" value="登录"/>
+    </div>
+</form>
+</body>
+</html>

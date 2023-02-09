@@ -1,0 +1,22 @@
+spring:
+  resources:
+    static-locations: classpath:/templates
+  datasource:
+    url: jdbc:mysql://192.168.0.102:3316/test?useSSL=false&useUnicode=true&characterEncoding=UTF-8&severTimezone=GMT%2B8
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    jpa:
+      hibernate:
+        #反向数据库配置
+        ddl-auto: update
+        #控制台显示执行的sql语句
+        show-sql: true
+        # dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
+server:
+  context:
+    path: /noticeboard
+  port: 80
+
+debug: false

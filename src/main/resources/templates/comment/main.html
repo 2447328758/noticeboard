@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${topic.getTopic()}"></title>
+    <script src="/assets/js/jsCookie-1.4.js"></script>
+    <!--  引入jquery  -->
+    <script th:src="@{/webjars/jquery/3.6.1/dist/jquery.js}" src=""></script>
+    <!--  引入bootstrap  -->
+    <script th:src="@{/webjars/bootstrap/3.3.0/dist/js/bootstrap.js}" src=""></script>
+    <!-- 引入bootstrap css文件 -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.0/dist/css/bootstrap.css}" href="">
+</head>
+<body>
+
+<p>当前用户：<b th:text="${session.user.getUsername()}"></b></p>
+<p>当前主题：<b th:text="${topic.getTopic()}"></b></p>
+<button onclick="getComments()">显示一级评论</button>
+<div id="comments">
+
+</div>
+
+<form id="comment_submit" action="/comment_api/submit" method="post">
+	<input type="hidden" name="cid" value="">
+	<div >
+		回复内容：<input type="text" id="comment_string"/>
+	</div>
+	<input type="button" onclick="comment()" value="评论"/>
+</form>
+
+<script>
+	var xmlhttp=new XMLHttpRequest();
+    var jscookie = new jsCookie();
+	var comments_div = document.getElementById("comments");
+	var replyTo;
+    console.log(jscookie.read("topicId"));
+	
+	function addCommentToView(item){
+		comments_div.innerHTML += "<p cid='"+item.id+"'>"+item.publishTime+","+item.user.username+":"+item.comment+"<button onclick=getComments("+item.id+")>查看回复</button>"+
+		""+"</p>";
+	}
+	function getComments(replyCId)
+	{
+		let arg = "?cid="+jscookie.read("topicId")+"&replyCId="+replyCId;
+		if(replyCId == undefined)
+			arg = "?cid="+jscookie.read("topicId");
+		xmlhttp.open("GET","/comment_api/"+arg,false);
+		xmlhttp.send();
+		console.log(xmlhttp.responseText);
+		let result = JSON.parse(xmlhttp.responseText);
+		if(result.code=='OK'){
+		    //console.log("查询成功"+start+"-"+end);
+			//console.log("查询成功"+result.data);
+			comments_div.innerHTML="";
+			result.data.forEach(function(item, index){
+				addCommentToView(item);
+			})
+			replyTo=replyCId;//当前回复的评论id
+			console.log("当前位置发生变化replyTo"+replyTo);
+			//console.log(xmlhttp.responseText);
+		    return true;
+		}else if(replyCId!=undefined){
+			comments_div.innerHTML="";
+			replyTo=replyCId;//当前回复的评论id
+			console.log("当前位置发生变化replyTo"+replyTo);
+		}else{
+		    window.alert(result.msg);
+            console.log("查询失败"+start+"-"+end);
+            return false;
+		}
+
+	}
+	
+	function comment(){
+		let comment_string = document.getElementById("comment_string").value;
+		let result = comment_by_string_and_id(comment_string,replyTo);
+		//window.alert(result.msg);
+	}
+	function comment_by_string_and_id(comment_string,replyCId){
+		let arg = "?cid="+jscookie.read("topicId")+"&comment_string="+comment_string+"&replyCId="+replyCId;
+		if(replyCId == undefined)
+			arg = "?cid="+jscookie.read("topicId")+"&comment_string="+comment_string;
+		xmlhttp.open("POST","/comment_api/submit"+arg,false);
+		xmlhttp.send();
+		console.log(xmlhttp.responseText);
+		let result = JSON.parse(xmlhttp.responseText);
+		if(result.code=='OK'){
+			addCommentToView(result.data);
+			console.log("评论成功！");
+		}
+		else{
+			console.log("评论失败！");
+			window.alert(result.msg);
+		}
+		    
+		return result;
+	}
+</script>
+
+</body>
+</html>

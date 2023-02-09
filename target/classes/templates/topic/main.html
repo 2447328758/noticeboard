@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>留言主题</title>
+    <!--  引入jquery  -->
+    <script th:src="@{/webjars/jquery/3.6.1/dist/jquery.js}" src=""></script>
+    <!--  引入bootstrap  -->
+    <script th:src="@{/webjars/bootstrap/3.3.0/dist/js/bootstrap.js}" src=""></script>
+    <!-- 引入bootstrap css文件 -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/3.3.0/dist/css/bootstrap.css}" href="">
+</head>
+<body>
+<h1>你好，<b th:text="${session.user.getUsername()}"></b></h1>
+<button onclick="backward()">上一页</button>
+<button onclick="forward()">下一页</button>
+<div id="p_topic">
+
+</div>
+<script>
+    var xmlhttp=new XMLHttpRequest();
+    var start=0;
+    var end=100;
+    //获取主题
+    function getTopics(){
+		var p_topic=document.getElementById("p_topic");
+        xmlhttp.open("GET","/topic/topics?"+"start="+start+"&end="+end,false);
+        xmlhttp.send();
+        console.log(xmlhttp.responseText);
+        let result = JSON.parse(xmlhttp.responseText);
+        const template="<p class='topic'>{topic}</p>";
+        if(result.code=='OK'){
+            //console.log("查询成功"+start+"-"+end);
+			//console.log("查询成功"+result.data);
+			p_topic.innerHTML="";
+			result.data.forEach(function(item, index){
+				p_topic.innerHTML += "<p><a class='topic' href='/topic/?id="+item.id+"'>"+item.topic+"</a></p>";
+			})
+            return true;
+        }
+        else
+            console.log("查询失败"+start+"-"+end)
+			return false;
+    }
+	function forward(){
+		start+=100;
+		end+=100;
+		if(!getTopics()){
+			window.alert("后面已经没有内容了哦！");
+			start-=100;
+			end-=100;
+		}	
+	}
+	function backward(){
+		start-=100;
+		end-=100;
+		if(start<0){
+			window.alert("不能再往前了！");
+			start+=100;
+			end+=100;
+			return;
+		}
+		if(!getTopics()){
+			start+=100;
+			end+=100;
+			return;
+		}
+	}
+	getTopics();
+</script>
+</body>
+</html>
